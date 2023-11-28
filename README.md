@@ -1,92 +1,146 @@
-# CRISPRtOE_Analysis
+# CRISPRtOE Scripts and Commands
 
+## Description and Reference
 
+Repository of scripts and commands used to process and analyze sequencing files for CRISPRtOE (CRISPR transposon over-expression) experiments.
 
-## Getting started
+This repository maybe updated to streamline the analysis.
 
-To make it easy for you to get started with GitLab, here's a list of recommended next steps.
+This is associated with the manuscript MANUSCRIPT TITLE AND LINK
 
-Already a pro? Just edit this README.md and make it your own. Want to make it easy? [Use the template at the bottom](#editing-this-readme)!
+## Requirements
 
-## Add your files
+There are four [Anaconda](https://anaconda.org) environments required for different steps of the analysis. Each environment contains the specific versions of software used for each step as listed below. The environment files are:
 
-- [ ] [Create](https://docs.gitlab.com/ee/user/project/repository/web_editor.html#create-a-file) or [upload](https://docs.gitlab.com/ee/user/project/repository/web_editor.html#upload-a-file) files
-- [ ] [Add files using the command line](https://docs.gitlab.com/ee/gitlab-basics/add-file.html#add-a-file-using-the-command-line) or push an existing Git repository with the following command:
+- `cutadaptenv.yml`
+- `samtools.yml`
+- `r-3.6.yml`
+- `bedops_env.yml`
+- `deeptools_env.yml`
 
-```
-cd existing_repo
-git remote add origin https://gitpub.wei.wisc.edu/kmyers/crisprtoe_analysis.git
-git branch -M main
-git push -uf origin main
-```
+These are found in the `environments` directory and can be installed as follows:
 
-## Integrate with your tools
+`conda env create -f cutadaptenv.yml`
 
-- [ ] [Set up project integrations](https://gitpub.wei.wisc.edu/kmyers/crisprtoe_analysis/-/settings/integrations)
+The specific R libraries required for plotting are:
 
-## Collaborate with your team
+- `edgeR`
+- `ggplot2`
+- `tidyverse`
+- `ggrepel`
 
-- [ ] [Invite team members and collaborators](https://docs.gitlab.com/ee/user/project/members/)
-- [ ] [Create a new merge request](https://docs.gitlab.com/ee/user/project/merge_requests/creating_merge_requests.html)
-- [ ] [Automatically close issues from merge requests](https://docs.gitlab.com/ee/user/project/issues/managing_issues.html#closing-issues-automatically)
-- [ ] [Enable merge request approvals](https://docs.gitlab.com/ee/user/project/merge_requests/approvals/)
-- [ ] [Set auto-merge](https://docs.gitlab.com/ee/user/project/merge_requests/merge_when_pipeline_succeeds.html)
+## Usage and Steps
 
-## Test and Deploy
+### Combine and trim FASTQ files
 
-Use the built-in continuous integration in GitLab.
+1. Combine FASTQ files if run over multiple lanes, keeping the R1 and R2 files separate:<br>
+`cat Sample1*R1*fastq > Sample1_R1_combined.fastq`<br>
+`cat Sample1*R2*fastq > Sample1_R2_combined.fastq`<br>
 
-- [ ] [Get started with GitLab CI/CD](https://docs.gitlab.com/ee/ci/quick_start/index.html)
-- [ ] [Analyze your code for known vulnerabilities with Static Application Security Testing(SAST)](https://docs.gitlab.com/ee/user/application_security/sast/)
-- [ ] [Deploy to Kubernetes, Amazon EC2, or Amazon ECS using Auto Deploy](https://docs.gitlab.com/ee/topics/autodevops/requirements.html)
-- [ ] [Use pull-based deployments for improved Kubernetes management](https://docs.gitlab.com/ee/user/clusters/agent/)
-- [ ] [Set up protected environments](https://docs.gitlab.com/ee/ci/environments/protected_environments.html)
+2. Remove all non-genomic sequence from the R1 and R2 FASTQ files with [Cutadapt (v3.4)](https://journal.embnet.org/index.php/embnetjournal/article/view/200):<br>
+`conda activate cutadaptenv`<br>
+`cutadapt -a TGTTGGAACAACCATAAAATGATAATTACACCCATAAA -o Sample1_R1_combined_TnMatchFiltered.fastq Sample1_R1_combined.fastq`<br>
+`cutadapt -g GGATCCGTTATCAGCTACCTACTCGGCAGTTCAC -o Sample1_R2_combined_filter1.fastq Sample1_R2_combined.fastq`<br>
+`cutadapt -a GTTATCAGCTACCTACTCGGC -o Sample1_R2_combined_filter2.fastq Sample1_R2_combined_filter1.fastq`<br>
 
-***
+### Align filtered FASTQ files to genome with [Bowtie2 (v2.4.4)](http://www.nature.com/nmeth/journal/v9/n4/full/nmeth.1923.html)
 
-# Editing this README
+Use [Bowtie2 (v2.4.4)](http://www.nature.com/nmeth/journal/v9/n4/full/nmeth.1923.html) and the [_E. coli_ K-12 MG1655 genome](https://www.ncbi.nlm.nih.gov/datasets/genome/GCF_000005845.2/)<br>
 
-When you're ready to make this README your own, just edit this file and use the handy template below (or feel free to structure it however you want - this is just a starting point!). Thank you to [makeareadme.com](https://www.makeareadme.com/) for this template.
+`conda activate cutadaptenv`<br>
+`bowtie2 -N 0 -x ecoli -1 Sample1_R1_combined_TnMatchFiltered.fastq -2 Sample1_R2_combined_filter2.fastq --un Sample1_unmapped.sam -S Sample1_out.sam`<br>
 
-## Suggestions for a good README
-Every project is different, so consider which of these sections apply to yours. The sections used in the template are suggestions for most open source projects. Also keep in mind that while a README can be too long and detailed, too long is better than too short. If you think your README is too long, consider utilizing another form of documentation rather than cutting out information.
+### Filter the alignment files for length and same strand alignment of both reads
 
-## Name
-Choose a self-explaining name for your project.
+Use [Samtools (v1.13)](https://academic.oup.com/bioinformatics/article/25/16/2078/204688) and [BBMap (v38.32)](https://jgi.doe.gov/data-and-tools/software-tools/bbtools/bb-tools-user-guide/) for the filtering steps
 
-## Description
-Let people know what your project can do specifically. Provide context and add a link to any reference visitors might be unfamiliar with. A list of Features or a Background subsection can also be added here. If there are alternatives to your project, this is a good place to list differentiating factors.
+1. Filter for only mapped reads:<br>
+`conda activate cutadaptenv`<br>
+`samtools view -F 8 -h -O sam Sample1_out.sam -o Sample1_out_mapped.sam`<br>
 
-## Badges
-On some READMEs, you may see small images that convey metadata, such as whether or not all the tests are passing for the project. You can use Shields to add some to your README. Many services also have instructions for adding a badge.
+2. Filter for reads that map to the same strand:<br>
+`samtools view -F 0x2 -h -O sam Sample1_out_mapped.sam -o Sample1_out_mapped_filtered.sam`
 
-## Visuals
-Depending on what you are making, it can be a good idea to include screenshots or even a video (you'll frequently see GIFs rather than actual videos). Tools like ttygif can help, but check out Asciinema for a more sophisticated method.
+3. Filter for reads with a minimum length of 2 nt and a maximum length of 50 nt using [BBMap (v38.32)]:<br>
+`bbmap-38.32/reformat.sh in=Sample1_out_mapped_filtered.sam out=Sample1_out_mapped_filtered_lengthFiltered.sam minlength=2 maxlength=50`
 
-## Installation
-Within a particular ecosystem, there may be a common way of installing things, such as using Yarn, NuGet, or Homebrew. However, consider the possibility that whoever is reading your README is a novice and would like more guidance. Listing specific steps helps remove ambiguity and gets people to using your project as quickly as possible. If it only runs in a specific context like a particular programming language version or operating system or has dependencies that have to be installed manually, also add a Requirements subsection.
+4. Generate a historgram from the final filtered SAM file using `parsing_sam_for_histogram.py` with a text file listing the SAM files to process and then the Rscript `Histogram_CRISPRtOE.R`:<br>
+`python parsing_sam_for_histogram.py -f sam_files.txt`<br>
+`Rscript Histogram_CRISPRtOE.R -d <directory with parsed SAM files>`
 
-## Usage
-Use examples liberally, and show the expected output if you can. It's helpful to have inline the smallest example of usage that you can demonstrate, while providing links to more sophisticated examples if they are too long to reasonably include in the README.
+The histogram will show the distance between the spacer alignment and the transposon insertion location.
 
-## Support
-Tell people where they can go to for help. It can be any combination of an issue tracker, a chat room, an email address, etc.
+### Filter to include reads where the distance between the spacer and the transposon insertion site is <100 nts
 
-## Roadmap
-If you have ideas for releases in the future, it is a good idea to list them in the README.
+One of the files from the `Histogram_CRISPRtOE.R` Rscript is `SampleA_less_than_100.txt`. This file is a list of the reads with a distance <100 nts. We can use this to filter the SAM file.
 
-## Contributing
-State if you are open to contributions and what your requirements are for accepting them.
+1. Convert the SAM files to BAM files, then use AWK to refine the text file:<br>
+`conda activate samtools`<br>
+`samtoosl view -b Sample1_out_mapped_filtered_lengthFiltered.sam -o Sample1_out_mapped_filtered_lengthFiltered.bam`<br>
+`awk -F'\t' '{print $2}' SampleA_less_than_100.txt > SampleA_less_than_100_readName.txt`<br>
 
-For people who want to make changes to your project, it's helpful to have some documentation on how to get started. Perhaps there is a script that they should run or some environment variables that they need to set. Make these steps explicit. These instructions could also be useful to your future self.
+2. Use [Picard tools (v2.20)](https://broadinstitute.github.io/picard/) to filter the BAM file and include ONLY reads where the spacer sequence is less than 100 nts from the transposon insertion site:<br>
+`conda activate samtools`<br>
+`picard -Xmx124g FilterSamReads I=$i O=Sample1_out_mapped_filtered_lengthFiltered.bam READ_LIST_FILE=SampleA_less_than_100_readName.txt FILTER=includeReadList`<br>
 
-You can also document commands to lint the code or run tests. These steps help to ensure high code quality and reduce the likelihood that the changes inadvertently break something. Having instructions for running tests is especially helpful if it requires external setup, such as starting a Selenium server for testing in a browser.
+### Construct BigWig and Bed Files using [DeepTools (v3.5.1)](https://academic.oup.com/nar/article/44/W1/W160/2499308)
 
-## Authors and acknowledgment
-Show your appreciation to those who have contributed to the project.
+1. Sort and index the BAM file:<br>
+`conda activate samtools`<br>
+`samtools sort -O bam -o Sample1_out_mapped_filtered_lengthFiltered_sort.bam Sample1_out_mapped_filtered_lengthFiltered.bam`<br>
+`samtools index Sample1_out_mapped_filtered_lengthFiltered_sort.bam`<br>
 
-## License
-For open source projects, say how it is licensed.
+2. Normalized and write BigWig and Bed files:<br>
+`conda activate deeptools_env`<br>
+`bamCoverage -bs 1 -b Sample1_out_mapped_filtered_lengthFiltered_sort.bam -o Sample1_out_mapped_filtered_lengthFiltered_sort_BinSize1_CPM_norm.bw --effectiveGenomeSize 4641652 --normalizeUsing CPM`<br>
+`bamCoverage -bs 1 -b Sample1_out_mapped_filtered_lengthFiltered_sort.bam -o $Sample1_out_mapped_filtered_lengthFiltered_sort_BinSize1.bed --outFileFormat bedgraph`<br>
 
-## Project status
-If you have run out of energy or time for your project, put a note at the top of the README saying that development has slowed down or stopped completely. Someone may choose to fork your project or volunteer to step in as a maintainer or owner, allowing your project to keep going. You can also make an explicit request for maintainers.
+### Filter BAM file to determine exact location of transposon insertion site
+
+1. Filter the BAM file to only include reads that are <25 nt long. This will remove all the spacer reads because they are 32 nt long. Then the resulting reads can be used to find the location of the transposon insertion across the genome:<br>
+`conda activate samtools`<br>
+`samtools view -e 'length(seq)<25' -O BAM -o Sample1_out_mapped_filtered_lengthFiltered_sort_lessThan25.bam Sample1_out_mapped_filtered_lengthFiltered_sort.bam`<br>
+
+2. Combine the BAM files into a file called `bam_files.txt` and then run the following python script:<br>
+`ls *bam > bam_files.txt`<br>
+`python site_of_insertion.py -f bam_files.txt`<br>
+
+This will result in a WIG file for visualization and a table.txt file with the location of each insertion site and the count of the reads at that location.
+
+### Determine the distance from transposon insertion site to gene downstream
+
+Use [BEDOPS (v2.4.41)](https://academic.oup.com/bioinformatics/article/28/14/1919/218826) and the `closest-features` function for this.
+
+1. Convert the table.txt file from the previous step into a BED file:<br>
+`conda activate bedops_env`<br>
+`ls *site_table.txt > input_file.txt`<br>
+`python table_to_bed.py -f input_file.txt`<br>
+
+2. Sort BED file and run `closest-features` with _E. coli_ gene BED file:<br>
+`sort_bed Sample1_out_mapped_filtered_lengthFiltered_sort_lessThan25.bed > Sample1_out_mapped_filtered_lengthFiltered_sort_lessThan25_sort.bed`<br>
+`closest-features --dist --closest Sample1_out_mapped_filtered_lengthFiltered_sort_lessThan25_sort.bed NC_000913.3.bed > Sample1_out_mapped_filtered_lengthFiltered_sort_lessThan25_sort_dist.bed`<br>
+
+### Using DIST.BED files to construct histogram of distances between transposon insertion site and gene start site
+
+1. Combine sample DIST.BED files into one and make a table to construct a histogram:<br>
+`cat *dist.bed > combined_crisprtoe.bed`<br>
+`python make_table_for_histogram.py`<br>
+
+Use Tn-seq data from [Goodall et al](https://journals.asm.org/doi/10.1128/mbio.02096-17) from _E. coli_ K-12 BW25113 as a comparison.
+
+2. Use R to construct a histogram comparing CRISPRtOE distance upstream of genes to traditional Tn-seq data:<br>
+`CRISPRtOE <- read.table(file = "combined_crisprtoe_distance.txt", head = F)`<br>
+`tnseq <- read.table(file = "whole_genome_tnseq_sort_dist.txt", header = F)`<br>
+`hist(CRISPRtOE$V1, breaks = 50, main = "Distance from Gene Start", xlab = "Distance (bp)", col=rgb(1,0,0,0.5), freq = F)`<br>
+`hist(tnseq$V1, breaks = 50, main = "Distance from Gene Start", xlab = "Distance (bp)", col=rgb(0,0,1,0.5), add=T, freq = F)`<br>
+
+### Count the number of times each spacer appears in the filtered alignment files
+
+Use `SampleA_combined_out_mapped_lengthFiltered_100bpInt_filtered_sort.bam` files. Combine if more than one:<br>
+`ls *bam > bam_files.txt`<br>
+`python counting_spacers.py -f bam_files.txt -t spacers_to_search.txt`<br>
+
+Use the `comparison_of_spacer_counts_edgeR.R` Rscript to compare control and treated samples.<br>
+Use the `plotting_scatter_plot.R` Rscript to generate a plot comparing fold change and FDR values.<br>
+Use the `barplot_with_points.R` Rscript to generate bar plots of gene fold change with individual data points superimposed.<br>
+Use the `scatter_plot_commands.R` Rscript to generate correlation scatter plots for replicates and other comparisons.

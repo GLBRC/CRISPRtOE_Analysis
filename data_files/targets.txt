@@ -1,0 +1,9 @@
+Sample	Strain
+CtOE-EC-33	DMSO_NoPromoter
+CtOE-EC-34	DMSO_NoPromoter
+CtOE-EC-35	DMSO_Promoter
+CtOE-EC-36	DMSO_Promoter
+CtOE-EC-45	TMP_NoPromoter
+CtOE-EC-46	TMP_NoPromoter
+CtOE-EC-47	TMP_Promoter
+CtOE-EC-48	TMP_Promoter

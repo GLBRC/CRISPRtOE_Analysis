@@ -147,4 +147,4 @@ Use the `scatter_plot_commands.R` Rscript to generate correlation scatter plots 
 
 ### Repository Maintenance
 
-Repo maintained by Kevin Myers (kmyers2@wisc.edu) at (https://gitpub.wei.wisc.edu/kmyers/crisprtoe_analysis)[https://gitpub.wei.wisc.edu/kmyers/crisprtoe_analysis] (Access restricted for primary repo)
+Repo maintained by Kevin Myers (kmyers2@wisc.edu) at https://gitpub.wei.wisc.edu/kmyers/crisprtoe_analysis (Access restricted for primary repo)

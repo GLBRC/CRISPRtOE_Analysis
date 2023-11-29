@@ -144,3 +144,7 @@ Use the `comparison_of_spacer_counts_edgeR.R` Rscript to compare control and tre
 Use the `plotting_scatter_plot.R` Rscript to generate a plot comparing fold change and FDR values.<br>
 Use the `barplot_with_points.R` Rscript to generate bar plots of gene fold change with individual data points superimposed.<br>
 Use the `scatter_plot_commands.R` Rscript to generate correlation scatter plots for replicates and other comparisons.
+
+### Repository Maintenance
+
+Repo maintained by Kevin Myers (kmyers2@wisc.edu) at (https://gitpub.wei.wisc.edu/kmyers/crisprtoe_analysis)[https://gitpub.wei.wisc.edu/kmyers/crisprtoe_analysis] (Access restricted for primary repo)

@@ -64,8 +64,8 @@ Use [Samtools (v1.13)](https://academic.oup.com/bioinformatics/article/25/16/207
 3. Filter for reads with a minimum length of 2 nt and a maximum length of 50 nt using [BBMap (v38.32)]:<br>
 `bbmap-38.32/reformat.sh in=Sample1_out_mapped_filtered.sam out=Sample1_out_mapped_filtered_lengthFiltered.sam minlength=2 maxlength=50`
 
-4. Generate a historgram from the final filtered SAM file using `parsing_sam_for_histogram.py` with a text file listing the SAM files to process and then the Rscript `Histogram_CRISPRtOE.R`:<br>
-`python parsing_sam_for_histogram.py -f sam_files.txt`<br>
+4. Generate a historgram from the final filtered SAM file using `parsing_sam_for_histogram_single_file.py` with a text file listing the SAM files to process and then the Rscript `Histogram_CRISPRtOE.R`:<br>
+`python parsing_sam_for_histogram_single_file.py -f sam_files.txt`<br>
 `Rscript Histogram_CRISPRtOE.R -d <directory with parsed SAM files>`
 
 The histogram will show the distance between the spacer alignment and the transposon insertion location.

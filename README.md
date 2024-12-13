@@ -101,7 +101,7 @@ One of the files from the `Histogram_CRISPRtOE.R` Rscript is `SampleA_less_than_
 `conda activate samtools`<br>
 `samtools view -e 'length(seq)<25' -O BAM -o Sample1_out_mapped_filtered_lengthFiltered_sort_lessThan25.bam Sample1_out_mapped_filtered_lengthFiltered_sort.bam`<br>
 
-2. Combine the BAM files into a file called `bam_files.txt` and then run the following python script:<br>
+2. Combine the BAM and corresponding BED files into a file (tab delimited) called `bam_files.txt` and then run the following python script:<br>
 `ls *bam > bam_files.txt`<br>
 `python site_of_insertion.py -f bam_files.txt`<br>
 

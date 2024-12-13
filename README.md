@@ -81,13 +81,13 @@ One of the files from the `Histogram_CRISPRtOE.R` Rscript is `SampleA_less_than_
 
 2. Use [Picard tools (v2.20)](https://broadinstitute.github.io/picard/) to filter the BAM file and include ONLY reads where the spacer sequence is less than 100 nts from the transposon insertion site:<br>
 `conda activate samtools`<br>
-`picard -Xmx124g FilterSamReads I=$i O=Sample1_out_mapped_filtered_lengthFiltered.bam READ_LIST_FILE=SampleA_less_than_100_readName.txt FILTER=includeReadList`<br>
+`picard -Xmx124g FilterSamReads I=Sample1_out_mapped_filtered_lengthFiltered.bam O=Sample1_out_mapped_filtered_lengthFiltered_100bpInt_filtered.bam READ_LIST_FILE=SampleA_less_than_100_readName.txt FILTER=includeReadList`<br>
 
 ### Construct BigWig and Bed Files using [DeepTools (v3.5.1)](https://academic.oup.com/nar/article/44/W1/W160/2499308)
 
 1. Sort and index the BAM file:<br>
 `conda activate samtools`<br>
-`samtools sort -O bam -o Sample1_out_mapped_filtered_lengthFiltered_sort.bam Sample1_out_mapped_filtered_lengthFiltered.bam`<br>
+`samtools sort -O bam -o Sample1_out_mapped_filtered_lengthFiltered_sort.bam Sample1_out_mapped_filtered_lengthFiltered_100bpInt_filtered.bam`<br>
 `samtools index Sample1_out_mapped_filtered_lengthFiltered_sort.bam`<br>
 
 2. Normalized and write BigWig and Bed files:<br>

@@ -101,9 +101,12 @@ One of the files from the `Histogram_CRISPRtOE.R` Rscript is `SampleA_less_than_
 `conda activate samtools`<br><br>
 `samtools view -e 'length(seq)<25' -O BAM -o Sample1_out_mapped_filtered_lengthFiltered_sort_lessThan25.bam Sample1_out_mapped_filtered_lengthFiltered_sort.bam`<br>
 
-2. Combine the BAM and corresponding BED files into a file (tab delimited) called `bam_files.txt` and then run the following python script:<br><br>
-`ls *bam > bam_files.txt`<br><br>
-`python site_of_insertion.py -f bam_files.txt`<br>
+2. Combine the BAM and corresponding BED files into a file (tab delimited) called `bam_bed_files.txt` and then run the following python script:<br><br>
+`python site_of_insertion.py -f bam_bed_files.txt`<br>
+
+The `bam_bed_files.txt` input file should have the BAM file and the corresponding BED file names, one per line, tab separated:<br><br>
+`BAM_file1.bam   BED_file1.bed`<br>
+`BAM_file2.bam   BED_file2.bed`<br>
 
 This will result in a WIG file for visualization and a table.txt file with the location of each insertion site and the count of the reads at that location.
 

@@ -1,4 +1,4 @@
-name: r-3.6
+name: r-3.6_env
 channels:
   - bioconda
   - r
@@ -254,4 +254,4 @@ dependencies:
   - zipp=3.1.0=py_0
   - zlib=1.2.11=h7b6447c_3
   - zstd=1.4.5=h9ceee32_0
-prefix: /home/glbrc.org/kmyers/.conda/envs/r-3.6
+prefix: /home/glbrc.org/kmyers/.conda/envs/r-3.6_env

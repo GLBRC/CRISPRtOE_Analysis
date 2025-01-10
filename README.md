@@ -66,6 +66,9 @@ Use [Samtools (v1.13)](https://academic.oup.com/bioinformatics/article/25/16/207
 
 4. Generate a historgram from the final filtered SAM file using `parsing_sam_for_histogram_single_file.py` with a text file listing the SAM files to process and then the Rscript `Histogram_CRISPRtOE.R`:<br><br>
 `python parsing_sam_for_histogram_single_file.py -f sam_files.txt`<br><br>
+`unset PYTHONPATH`<br>
+`unset RLIBS`<br>
+`conda activate r-3.6_env`<br>
 `Rscript Histogram_CRISPRtOE.R -d <directory with parsed SAM files>`
 
 The histogram will show the distance between the spacer alignment and the transposon insertion location.

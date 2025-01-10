@@ -173,6 +173,7 @@ dependencies:
   - r-nnet=7.3_12=r36h96ca727_0
   - r-numderiv=2016.8_1=r36h6115d3f_0
   - r-openssl=1.3=r36h96ca727_0
+  - r-optparse=1.7.5=r44hc72bb7e_1
   - r-pbdzmq=0.3_3=r36h5455479_1
   - r-pillar=1.3.1=r36h6115d3f_0
   - r-pkgconfig=2.0.2=r36h6115d3f_0
@@ -253,4 +254,4 @@ dependencies:
   - zipp=3.1.0=py_0
   - zlib=1.2.11=h7b6447c_3
   - zstd=1.4.5=h9ceee32_0
-prefix: /opt/bifxapps/miniconda3/envs/r-3.6
+prefix: /home/glbrc.org/kmyers/.conda/envs/r-3.6

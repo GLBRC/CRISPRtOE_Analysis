@@ -24,7 +24,7 @@ def process( input_file, output_file ):
     pre_bed_list = []
     with open(input_file, 'r') as f:
         for line in f:
-            refname = line.splite("\t")[0]
+            refname = line.split("\t")[0]
             start_pos = line.split("\t")[1]
             end_pos = int(start_pos)+1
             strand = line.rstrip().split("\t")[3]

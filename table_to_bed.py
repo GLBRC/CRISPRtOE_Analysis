@@ -24,13 +24,14 @@ def process( input_file, output_file ):
     pre_bed_list = []
     with open(input_file, 'r') as f:
         for line in f:
-            start_pos = line.split("\t")[0]
+            refname = line.splite("\t")[0]
+            start_pos = line.split("\t")[1]
             end_pos = int(start_pos)+1
-            strand = line.rstrip().split("\t")[2]
+            strand = line.rstrip().split("\t")[3]
             if strand == "forward":
-                pre_bed_list.append(f"NC_000913.3\t{start_pos}\t{end_pos}\t.\t.\t+\n")
+                pre_bed_list.append(f"{refname}\t{start_pos}\t{end_pos}\t.\t.\t+\n")
             else:
-                pre_bed_list.append(f"NC_000913.3\t{start_pos}\t{end_pos}\t.\t.\t-\n")
+                pre_bed_list.append(f"{refname}\t{start_pos}\t{end_pos}\t.\t.\t-\n")
                 
     with open(output_file, 'w') as f:
         for each in pre_bed_list:

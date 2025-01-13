@@ -99,7 +99,7 @@ def parse( bam, bedFile ):
             o.write(f"track type=wiggle_0\nvariableStep chrom={each} span=1\n")
             for line in wig_out:
                 if line.startswith(each):
-                    new_line = line.rstrip("\n").split("_")[1]
+                    new_line = line.split("_")[1]
                     o.write(new_line)
 
 def main():

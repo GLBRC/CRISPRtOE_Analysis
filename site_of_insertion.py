@@ -34,13 +34,14 @@ def parse( bam, bedFile ):
         seq = line.seq
         pos = line.pos
         tlen = line.tlen
+        refname = line.reference_name
         if tlen < 0:
             strand = "forward"
             position = pos + len(seq)
-            data_list.append(f"{position}\t{strand}\n")
+            data_list.append(f"{refname}\t{position}\t{strand}\n")
         else:
             strand = "reverse"
-            data_list.append(f"{pos}\t{strand}\n")
+            data_list.append(f"{refname}\t{pos}\t{strand}\n")
                 
     out_set = set(data_list)
     out_list = list(out_set)
@@ -53,13 +54,17 @@ def parse( bam, bedFile ):
     #write WIG and table outputs
     with open(bedFile, "r") as t:
         for line in t:
+            refname = line.split("\t")[0]
             pos = line.split("\t")[1]
             count = line.rstrip().split("\t")[3]
-            final_dict1[int(pos)] = count
+            refname_pos = refname + "_" + pos
+            final_dict1[str(refname_pos)] = count
         for each in out_list:
-            position = each.split("\t")[0]
-            strand = each.rstrip("\n").split("\t")[1]
-            final_dict2[int(position)] = strand
+            refname = each.split("\t")[0]
+            position = each.split("\t")[1]
+            strand = each.rstrip("\n").split("\t")[2]
+            refname_pos = refname + "_" + position
+            final_dict2[str(refname_pos)] = strand
 
         #construct sets from each dictionary keys and find intersection    
         pileup_key_set = set(final_dict1.keys())
@@ -71,16 +76,31 @@ def parse( bam, bedFile ):
                 final_count_list.append(f"{each}\t{final_dict1[each]}\t{final_dict2[each]}\n")
                 wig_out.append(f"{each}\t{final_dict1[each]}\n")
     
+    final_count_list2 = []
+    for each in final_count_list:
+        replaced = each.replace("_","\t")
+        final_count_list2.append(replaced)
+
     out_table = bam.replace(".bam", "_insertion_site_table.txt")
     with open(out_table, 'w') as o:
-        for each in final_count_list:
+        for each in final_count_list2:
             o.write(each)
     
+    ref_names = []
+    for each in wig_out:
+        ref = each.split("_")[0]
+        ref_names.append(ref)
+    ref_names_set = set(ref_names)
+    ref_names_set_list = list(ref_names_set)
+
     out_wig = bam.replace(".bam", "_insertion_site.wig")            
     with open(out_wig, 'w') as o:
-        o.write("track type=wiggle_0\nvariableStep chrom=NC_000913.3 span=1\n")
-        for each in wig_out:
-            o.write(each)
+        for each in ref_names_set_list:
+            o.write(f"track type=wiggle_0\nvariableStep chrom={each} span=1\n")
+            for line in wig_out:
+                if line.startswith(each):
+                    new_line = line.rstrip("\n").split("_")[1]
+                    o.write(new_line)
 
 def main():
    

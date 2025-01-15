@@ -186,7 +186,7 @@ def main():
     with open(BAM_files, 'r') as f:
         for line in f:
             bam = line.rstrip('\n')
-            out_file = bam.replace("_combined_out_mapped_filtered_lengthFiltered_100bpInt_filtered_sort.bam", "_spacer_count.txt")
+            out_file = bam.replace(".bam", "_spacer_count.txt")
             
             print(f"Analyzing {bam} file now...")
             

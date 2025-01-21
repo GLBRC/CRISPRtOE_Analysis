@@ -130,15 +130,15 @@ Use [BEDOPS (v2.4.41)](https://academic.oup.com/bioinformatics/article/28/14/191
 
 1. Combine sample DIST.BED files into one and make a table to construct a histogram:<br><br>
 `cat *dist.bed > combined_crisprtoe.bed`<br><br>
-`python make_table_for_histogram.py`<br>
+`python make_table_for_histogram.py -f combined_crisprtoe.bed`<br>
 
-Use Tn-seq data from [Goodall et al](https://journals.asm.org/doi/10.1128/mbio.02096-17) from _E. coli_ K-12 BW25113 as a comparison.
+Note - the script `make_table_for_histogram.py` contains commands to process whole genome Tn-seq data as a control. It is recommended to run these individually in a Python console. We used Tn-seq data from [Goodall et al](https://journals.asm.org/doi/10.1128/mbio.02096-17) from _E. coli_ K-12 BW25113 as a comparison.
 
 2. Use R to construct a histogram comparing CRISPRtOE distance upstream of genes to traditional Tn-seq data:<br><br>
 `CRISPRtOE <- read.table(file = "combined_crisprtoe_distance.txt", head = F)`<br><br>
-`tnseq <- read.table(file = "whole_genome_tnseq_sort_dist.txt", header = F)`<br><br>
+`tnseq <- read.table(file = "whole_genome_tnseq_sort_dist.txt", header = F)` (need only if using whole genome Tn-seq as a contorl)<br><br>
 `hist(CRISPRtOE$V1, breaks = 50, main = "Distance from Gene Start", xlab = "Distance (bp)", col=rgb(1,0,0,0.5), freq = F)`<br><br>
-`hist(tnseq$V1, breaks = 50, main = "Distance from Gene Start", xlab = "Distance (bp)", col=rgb(0,0,1,0.5), add=T, freq = F)`<br>
+`hist(tnseq$V1, breaks = 50, main = "Distance from Gene Start", xlab = "Distance (bp)", col=rgb(0,0,1,0.5), add=T, freq = F)` (need only if using whole genome Tn-seq as a control)<br>
 
 ### Count the number of times each spacer appears in the filtered alignment files
 

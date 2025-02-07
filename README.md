@@ -64,8 +64,8 @@ Use [Samtools (v1.13)](https://academic.oup.com/bioinformatics/article/25/16/207
 3. Filter for reads with a minimum length of 2 nt and a maximum length of 50 nt using [BBMap (v38.32)]:<br><br>
 `bbmap-38.32/reformat.sh in=Sample1_out_mapped_filtered.sam out=Sample1_out_mapped_filtered_lengthFiltered.sam minlength=2 maxlength=50`
 
-4. Generate a historgram from the final filtered SAM file using `parsing_sam_for_histogram_single_file.py` with a text file listing the SAM files to process and then the Rscript `Histogram_CRISPRtOE.R`:<br><br>
-`python parsing_sam_for_histogram_single_file.py -f sam_files.txt`<br><br>
+4. Generate a historgram from the final filtered SAM file using `parsing_sam_for_histogram_single_file.py` for each SAM file to process and then the Rscript `Histogram_CRISPRtOE.R`:<br><br>
+`python parsing_sam_for_histogram_single_file.py -f Sample1_out_mapped_filtered_lengthFiltered.sam`<br><br>
 `unset PYTHONPATH`<br>
 `unset RLIBS`<br>
 `conda activate r-3.6_env`<br>
